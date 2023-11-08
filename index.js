@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const User = require("./models/User.model");
+const Exercise = require("./models/Exercise.model");
 require("dotenv").config();
 require("./db");
 
@@ -32,4 +33,20 @@ app.get("/api/users", async (req, res, next) => {
 app.post("/api/users", async (req, res, next) => {
   const newUser = await User.create(req.body);
   res.status(201).json({ username: newUser.username, _id: newUser._id });
+});
+
+//Create an exercise
+app.post("/api/users/:_id/exercises", async (req, res, next) => {
+  const user = await User.findById(req.params._id);
+  const date = req.body.date || new Date();
+  const exercise = await Exercise.create({ ...req.body, date: date });
+
+  console.log(exercise);
+  res.json({
+    username: user.username,
+    description: exercise.description,
+    duration: exercise.duration,
+    date: exercise.date.toDateString(),
+    _id: user._id,
+  });
 });

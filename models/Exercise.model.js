@@ -4,7 +4,10 @@ const exerciseSchema = new Schema({
   username: String,
   description: String,
   duration: Number,
-  date: Date,
+  date: {
+    type: Date,
+    default: new Date(),
+  },
 });
 
 const Exercise = model("Exercise", exerciseSchema);
