@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const User = require("./models/User.model");
 require("dotenv").config();
 require("./db");
 
@@ -19,4 +20,10 @@ app.use(bodyParser.json());
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
+});
+
+//Create a new user
+app.post("/api/users", async (req, res, next) => {
+  const newUser = await User.create(req.body);
+  res.status(201).json({ username: newUser.username, _id: newUser._id });
 });
