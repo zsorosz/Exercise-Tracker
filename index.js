@@ -22,6 +22,12 @@ const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
 });
 
+//Get all users
+app.get("/api/users", async (req, res, next) => {
+  const allUsers = await User.find();
+  res.json(allUsers);
+});
+
 //Create a new user
 app.post("/api/users", async (req, res, next) => {
   const newUser = await User.create(req.body);
