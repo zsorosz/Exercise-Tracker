@@ -38,7 +38,10 @@ app.post("/api/users", async (req, res, next) => {
 //Create an exercise
 app.post("/api/users/:_id/exercises", async (req, res, next) => {
   const date = req.body.date || new Date();
-  const exercise = await Exercise.create({ ...req.body, date: date });
+  const exercise = await Exercise.create({
+    ...req.body,
+    date: date,
+  });
   const user = await User.findByIdAndUpdate(
     req.params._id,
     { $push: { exercises: exercise._id } },
@@ -49,7 +52,25 @@ app.post("/api/users/:_id/exercises", async (req, res, next) => {
     username: user.username,
     description: exercise.description,
     duration: exercise.duration,
-    date: exercise.date.toDateString(),
+    date: exercise.date,
     _id: user._id,
+  });
+});
+
+//Get log of a user's exercises
+app.get("/api/users/:_id/logs", async (req, res, next) => {
+  const user = await User.findById(req.params._id).populate("exercises");
+  const from = new Date(req.query.from);
+  const to = new Date(req.query.to);
+  const log = user.exercises.filter(
+    (exercise) => exercise.date >= from && exercise.date <= to
+  );
+  res.json({
+    _id: user._id,
+    username: user.username,
+    from: from.toDateString(),
+    to: to.toDateString(),
+    count: user.exercises.length,
+    log: log.slice(0, req.query.limit),
   });
 });
