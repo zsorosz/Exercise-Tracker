@@ -37,11 +37,14 @@ app.post("/api/users", async (req, res, next) => {
 
 //Create an exercise
 app.post("/api/users/:_id/exercises", async (req, res, next) => {
-  const user = await User.findById(req.params._id);
   const date = req.body.date || new Date();
   const exercise = await Exercise.create({ ...req.body, date: date });
+  const user = await User.findByIdAndUpdate(
+    req.params._id,
+    { $push: { exercises: exercise._id } },
+    { new: true }
+  ).populate("exercises");
 
-  console.log(exercise);
   res.json({
     username: user.username,
     description: exercise.description,
