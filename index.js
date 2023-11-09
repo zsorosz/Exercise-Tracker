@@ -63,15 +63,25 @@ app.get("/api/users/:_id/logs", async (req, res, next) => {
   const from = req.query.from && new Date(req.query.from);
   const to = req.query.to && new Date(req.query.to);
   const createLog = () => {
-    let log = [];
+    let exercises = [];
+    //Filter excercises by optional params
     if (from || to) {
-      log = user.exercises.filter((exercise) => exercise.date >= from);
+      exercises = user.exercises.filter((exercise) => exercise.date >= from);
     } else {
-      log = user.exercises;
+      exercises = user.exercises;
     }
     if (req.query.limit) {
-      log = log.slice(0, req.query.limit);
+      exercises = exercises.slice(0, req.query.limit);
     }
+    //Create log
+    const log = [];
+    exercises.map((exercise) => {
+      log.push({
+        description: exercise.description,
+        duration: exercise.duration,
+        date: exercise.date.toDateString(),
+      });
+    });
     return log;
   };
   res.json({
